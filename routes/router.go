@@ -10,8 +10,8 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	api := app.Group("/") // Set route for API
-	api.Use(logger.New()) // Add logger to the API routes
+	api := app.Group("/api") // Set route for API
+	api.Use(logger.New())    // Add logger to the API routes
 
 	// Check user token
 	// This endpoint exist just for verifying auth cookies and the jwt token.
@@ -23,8 +23,8 @@ func SetupRoutes(app *fiber.App) {
 	})
 
 	user := api.Group("/user") // Route for users
-
 	file := api.Group("/file") // Route for servers
+
 	file.Post("/quota", middlewares.CheckUserToken, files.CheckQuota)
 
 	file.Post("/upload", middlewares.CheckUserToken, files.Upload)

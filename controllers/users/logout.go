@@ -13,10 +13,8 @@ func Logout(ctx *fiber.Ctx) error {
 
 	// Remove all the cookies by setting their expiration time 30 seconds in the past
 	ctx.Cookie(utils.GenCookie("token", "", time.Second*-30, os.Getenv("SERVER_DOMAIN")))
-	ctx.Cookie(utils.GenCookie("pvkey", "", time.Second*-30, os.Getenv("SERVER_DOMAIN")))
 	if ctx.Hostname() == os.Getenv("TOR_ADDRESS") {
 		ctx.Cookie(utils.GenCookie("token", "", time.Second*-30, os.Getenv("TOR_ADDRESS")))
-		ctx.Cookie(utils.GenCookie("pvkey", "", time.Second*-30, os.Getenv("TOR_ADDRESS")))
 	}
 
 	return ctx.JSON(fiber.Map{

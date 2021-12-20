@@ -28,5 +28,5 @@ func GenCookie(name string, value string, exp time.Duration, domain string) *fib
 
 func GetQuota() int {
 	i, _ := strconv.Atoi(os.Getenv("STORAGE_QUOTA"))
-	return i * 1024 * 1024
+	return (i * 1024 * 1024)
 }

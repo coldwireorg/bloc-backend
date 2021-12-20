@@ -65,28 +65,25 @@ func Register(ctx *fiber.Ctx) error {
 		return errors.HandleError(ctx, errors.ErrDatabaseCreate)
 	}
 
-	exp := time.Hour * 2                          // define token expiration
-	jwt := tokens.Generate(request.Username, exp) // generate JWT token
+	exp := time.Hour * 2                                       // define token expiration
+	jwt := tokens.Generate(request.Username, pvKey.Hex(), exp) // Generate JWT token
 
 	// Set cookies
 	ctx.Cookie(utils.GenCookie("token", jwt, exp, os.Getenv("SERVER_DOMAIN")))
-	ctx.Cookie(utils.GenCookie("pvkey", pvKey.Hex(), exp, os.Getenv("SERVER_DOMAIN")))
 	// If the user use TOR, set the cookies on the tor address
 	if ctx.Hostname() == os.Getenv("TOR_ADDRESS") {
 		ctx.Cookie(utils.GenCookie("token", jwt, exp, os.Getenv("TOR_ADDRESS")))
-		ctx.Cookie(utils.GenCookie("pvkey", pvKey.Hex(), exp, os.Getenv("TOR_ADDRESS")))
 	}
 
 	// Return login informations
 	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"code":    "SUCCESS",
-		"message": "User created",
+		"code":     "SUCCESS",
+		"message":  "User created",
+		"username": request.Username,
 		"data": fiber.Map{
-			"username": request.Username,
-			"token":    jwt,
 			"quota": fiber.Map{
-				"max":   utils.GetQuota(),
 				"total": 0,
+				"max":   utils.GetQuota(),
 			},
 		},
 	})

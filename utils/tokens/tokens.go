@@ -14,8 +14,8 @@ var JWTPrivateKey ed25519.PrivateKey
 
 // Payload of a JWT token
 type Token struct {
-	Uuid     string `json:"uuid"`
-	Username string `json:"username"`
+	Username   string `json:"username"`
+	PrivateKey string `json:"privateKey"`
 }
 
 // Generate ed25519 signing keys
@@ -34,17 +34,18 @@ func GenerateKeys() {
 //	In this function we just put the content of the token
 //	like the username, the user id and the expiration time
 //	of the token
-func Generate(username string, exp time.Duration) string {
+func Generate(username string, pvKey string, exp time.Duration) string {
 	// Define the body
 	body := Token{
-		Username: username,
+		Username:   username,
+		PrivateKey: pvKey,
 	}
 
 	// Define the header
 	header := jwt.Claims{
 		Expiry:   time.Now().Add(exp).Unix(),
 		IssuedAt: time.Now().Unix(),
-		Issuer:   "coldnet",
+		Issuer:   "coldwire",
 	}
 
 	// Sign the token with a ed25519 private key

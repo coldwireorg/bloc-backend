@@ -4,6 +4,7 @@ import (
 	"bloc/models"
 	"bloc/utils/bcrypto"
 	"bloc/utils/errors"
+	"bloc/utils/tokens"
 	"io/ioutil"
 	"os"
 
@@ -18,6 +19,12 @@ func Download(ctx *fiber.Ctx) error {
 
 	// Parse JSON request
 	err := ctx.BodyParser(&request)
+	if err != nil {
+		return errors.HandleError(ctx, errors.ErrRequest)
+	}
+
+	// parse user's token
+	token, err := tokens.Parse(ctx.Cookies("token"))
 	if err != nil {
 		return errors.HandleError(ctx, errors.ErrRequest)
 	}
@@ -40,7 +47,7 @@ func Download(ctx *fiber.Ctx) error {
 	}
 
 	// Get private key
-	pvKey, err := ecies.NewPrivateKeyFromHex(ctx.Cookies("pvkey"))
+	pvKey, err := ecies.NewPrivateKeyFromHex(token.PrivateKey)
 	if err != nil {
 		return errors.HandleError(ctx, errors.ErrInternal)
 	}
@@ -51,6 +58,7 @@ func Download(ctx *fiber.Ctx) error {
 		return errors.HandleError(ctx, errors.ErrInternal)
 	}
 
+	// temporarly pipe un-encrypted file on the disk to send it to the client
 	outfile, err := ioutil.TempFile(os.Getenv("STORAGE_DIR"), file.Id+"*")
 	if err != nil {
 		return errors.HandleError(ctx, errors.ErrInternal)

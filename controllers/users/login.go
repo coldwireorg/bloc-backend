@@ -61,15 +61,13 @@ func Login(ctx *fiber.Ctx) error {
 	privateKey := ecies.NewPrivateKeyFromBytes(decryptedPrivateKey)
 
 	exp := time.Hour * 2
-	jwt := tokens.Generate(request.Username, exp) // Generate JWT token
+	jwt := tokens.Generate(request.Username, privateKey.Hex(), exp) // Generate JWT token
 
 	// set cookies
 	ctx.Cookie(utils.GenCookie("token", jwt, exp, os.Getenv("SERVER_DOMAIN")))
-	ctx.Cookie(utils.GenCookie("pvkey", privateKey.Hex(), exp, os.Getenv("SERVER_DOMAIN")))
 	// if user use tor browser
 	if ctx.Hostname() == os.Getenv("TOR_ADDRESS") {
 		ctx.Cookie(utils.GenCookie("token", jwt, exp, os.Getenv("TOR_ADDRESS")))
-		ctx.Cookie(utils.GenCookie("pvkey", privateKey.Hex(), exp, os.Getenv("TOR_ADDRESS")))
 	}
 
 	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
@@ -77,10 +75,9 @@ func Login(ctx *fiber.Ctx) error {
 		"message": "User login",
 		"data": fiber.Map{
 			"username": request.Username,
-			"token":    jwt,
 			"quota": fiber.Map{
+				"total": 0,
 				"max":   utils.GetQuota(),
-				"total": user.Quota,
 			},
 		},
 	})
