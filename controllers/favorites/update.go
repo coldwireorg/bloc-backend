@@ -1,4 +1,4 @@
-package files
+package favorites
 
 import (
 	"bloc/models"
@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UpdateFavorite(ctx *fiber.Ctx) error {
+func Update(ctx *fiber.Ctx) error {
 	request := struct {
 		AccessId string `json:"accessId"`
 		Favorite bool   `json:"favorite"`

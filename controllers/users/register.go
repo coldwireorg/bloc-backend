@@ -77,10 +77,10 @@ func Register(ctx *fiber.Ctx) error {
 
 	// Return login informations
 	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"code":     "SUCCESS",
-		"message":  "User created",
-		"username": request.Username,
+		"code":    "SUCCESS",
+		"message": "User created",
 		"data": fiber.Map{
+			"username": request.Username,
 			"quota": fiber.Map{
 				"total": 0,
 				"max":   utils.GetQuota(),

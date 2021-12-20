@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"bloc/controllers/favorites"
 	"bloc/controllers/files"
+	"bloc/controllers/shares"
 	"bloc/controllers/users"
 	"bloc/middlewares"
 
@@ -22,23 +24,28 @@ func SetupRoutes(app *fiber.App) {
 		return ctx.JSON(fiber.Map{})
 	})
 
-	user := api.Group("/user") // Route for users
+	/* USERS RELATED ROUTES */
+	user := api.Group("/user")
+	user.Get("/quota", middlewares.CheckUserToken, users.QuotaGet)
+	user.Post("/quota", middlewares.CheckUserToken, users.QuotaCheck)
+	user.Post("/auth/login", users.Login)
+	user.Post("/auth/register", users.Register)
+	user.Post("/auth/logout", users.Logout)
+
+	/* FILES RELATED ROUTES */
 	file := api.Group("/file") // Route for servers
-
-	file.Post("/quota", middlewares.CheckUserToken, files.CheckQuota)
-
-	file.Post("/upload", middlewares.CheckUserToken, files.Upload)
-	file.Delete("/delete", middlewares.CheckUserToken, files.Delete)
-
-	file.Post("/favorite", middlewares.CheckUserToken, files.UpdateFavorite)
-
-	file.Post("/share", middlewares.CheckUserToken, files.ShareFile)
-	file.Delete("/share", middlewares.CheckUserToken, files.UnshareFile)
-
+	file.Post("/", middlewares.CheckUserToken, files.Upload)
+	file.Delete("/", middlewares.CheckUserToken, files.Delete)
+	file.Get("/", middlewares.CheckUserToken, files.List)
 	file.Post("/download", middlewares.CheckUserToken, files.Download)
-	file.Get("/list", middlewares.CheckUserToken, files.List)
 
-	user.Post("/login", users.Login)
-	user.Post("/register", users.Register)
-	user.Post("/logout", users.Logout)
+	/* FAVORITES RELATED ROUTES */
+	favorite := api.Group("/file") // Route for servers
+	favorite.Post("/", middlewares.CheckUserToken, favorites.Update)
+
+	/* SHARES RELATED ROUTES */
+	share := api.Group("/share") // Route for servers
+	share.Post("/", middlewares.CheckUserToken, shares.Create)
+	share.Delete("/", middlewares.CheckUserToken, shares.Revoke)
+	share.Get("/", middlewares.CheckUserToken, shares.List)
 }

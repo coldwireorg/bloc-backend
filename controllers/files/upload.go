@@ -141,20 +141,22 @@ func Upload(ctx *fiber.Ctx) error {
 		"code":    "SUCCESS",
 		"message": "File uploaded!",
 		"data": fiber.Map{
-			"accessId":    access.Id,
-			"fileId":      file.Id,
-			"accessState": access.State,
-			"fileName":    file.Name,
-			"fileType":    file.Type,
-			"fileSize":    file.Size,
-			"sharedBy":    access.SharedBy,
-			"sharedTo":    access.SharedTo,
-			"lastEdit":    file.LastEdit,
-			"favorite":    access.Favorite,
-		},
-		"quota": fiber.Map{
-			"max":   utils.GetQuota(),
-			"total": quota,
+			"file": fiber.Map{
+				"accessId":    access.Id,
+				"fileId":      file.Id,
+				"accessState": access.State,
+				"fileName":    file.Name,
+				"fileType":    file.Type,
+				"fileSize":    file.Size,
+				"sharedBy":    access.SharedBy,
+				"sharedTo":    access.SharedTo,
+				"lastEdit":    file.LastEdit,
+				"favorite":    access.Favorite,
+			},
+			"quota": fiber.Map{
+				"max":   utils.GetQuota(),
+				"total": quota,
+			},
 		},
 	})
 }

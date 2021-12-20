@@ -1,4 +1,4 @@
-package files
+package shares
 
 import (
 	"bloc/models"
@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func ShareFile(ctx *fiber.Ctx) error {
+func Create(ctx *fiber.Ctx) error {
 	/* 1. Get all needed informations */
 	request := struct {
 		ShareTo  string `json:"shareTo"`  // Username of the person to share the file to
@@ -95,6 +95,8 @@ func ShareFile(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"code": "SUCCESS",
-		"data": accessModel,
+		"data": fiber.Map{
+			"file": accessModel,
+		},
 	})
 }

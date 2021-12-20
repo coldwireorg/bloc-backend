@@ -21,7 +21,7 @@ type File struct {
 }
 
 // Format of file to send when getting a list
-type FileList struct {
+type FileFull struct {
 	AccessId    string `db:"access_id"    json:"accessId"`
 	AccessState string `db:"access_state" json:"accessState"`
 
@@ -117,50 +117,32 @@ func FileGetSize(id string) (int64, error) {
  *************************************/
 
 // List files or received files
-func FileListAll(username string, received bool) ([]*FileList, error) {
-	var req string
-	if received {
-		req = `SELECT
-		t1.id           AS access_id,
-		t1.access_state AS access_state,
-		t1.f_shared_by  AS shared_by,
-		t1.f_shared_to  AS shared_to,
-		t2.last_edit    AS last_edit,
-		t1.favorite     AS favorite,
-		t2.id           AS file_id,
-		t2.name         AS file_name,
-		t2.type         AS file_type,
-		t2.size         AS file_size
-			FROM file_access AS t1
-				INNER JOIN files AS t2 ON t1.f_file = t2.id
-					WHERE t1.f_shared_to = $1 AND t1.access_state = 'SHARED';`
-	} else {
-		req = `SELECT
-		t1.id           AS access_id,
-		t1.access_state AS access_state,
-		t1.f_shared_by  AS shared_by,
-		t1.f_shared_to  AS shared_to,
-		t2.last_edit    AS last_edit,
-		t1.favorite     AS favorite,
-		t2.id           AS file_id,
-		t2.name         AS file_name,
-		t2.type         AS file_type,
-		t2.size         AS file_size
-			FROM file_access AS t1
-				INNER JOIN files AS t2 ON t1.f_file = t2.id
-					WHERE t1.f_shared_by = $1 AND t1.access_state = 'PRIVATE';`
-	}
+func FileList(username string) ([]*FileFull, error) {
+	req := `SELECT
+	t1.id           AS access_id,
+	t1.access_state AS access_state,
+	t1.f_shared_by  AS shared_by,
+	t1.f_shared_to  AS shared_to,
+	t2.last_edit    AS last_edit,
+	t1.favorite     AS favorite,
+	t2.id           AS file_id,
+	t2.name         AS file_name,
+	t2.type         AS file_type,
+	t2.size         AS file_size
+		FROM file_access AS t1
+			INNER JOIN files AS t2 ON t1.f_file = t2.id
+				WHERE t1.f_shared_to = $1;`
 
 	rows, err := database.DB.Query(context.Background(), req, username)
 	if err != nil {
 		log.Println(err)
 	}
 
-	var files []*FileList
+	var files []*FileFull
 	err = pgxscan.ScanAll(&files, rows)
 	if err != nil {
 		log.Println(err.Error())
-		return []*FileList{}, err
+		return []*FileFull{}, err
 	}
 
 	return files, err

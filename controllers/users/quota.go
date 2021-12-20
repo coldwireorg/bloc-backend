@@ -1,4 +1,4 @@
-package files
+package users
 
 import (
 	"bloc/models"
@@ -10,7 +10,7 @@ import (
 )
 
 // List files
-func CheckQuota(ctx *fiber.Ctx) error {
+func QuotaCheck(ctx *fiber.Ctx) error {
 	request := struct {
 		FileSize int64 `json:"size"`
 	}{}
@@ -46,9 +46,33 @@ func CheckQuota(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"code":    "SUCCESS",
 		"message": "you can upload your file",
-		"quota": fiber.Map{
-			"max":   utils.GetQuota(),
-			"total": userQuota,
+		"data": fiber.Map{
+			"quota": fiber.Map{
+				"max":   utils.GetQuota(),
+				"total": userQuota,
+			},
+		},
+	})
+}
+
+func QuotaGet(ctx *fiber.Ctx) error {
+	token, err := tokens.Parse(ctx.Cookies("token")) // get JWT token
+	if err != nil {
+		return errors.HandleError(ctx, errors.ErrRequest)
+	}
+
+	userQuota, err := models.UserGetQuota(token.Username)
+	if err != nil {
+		return errors.HandleError(ctx, errors.ErrDatabaseNotFound)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"code": "SUCCESS",
+		"data": fiber.Map{
+			"quota": fiber.Map{
+				"max":   utils.GetQuota(),
+				"total": userQuota,
+			},
 		},
 	})
 }
