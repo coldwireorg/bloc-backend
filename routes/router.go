@@ -40,8 +40,8 @@ func SetupRoutes(app *fiber.App) {
 	file.Post("/download", middlewares.CheckUserToken, files.Download)
 
 	/* FAVORITES RELATED ROUTES */
-	favorite := api.Group("/file") // Route for servers
-	favorite.Post("/", middlewares.CheckUserToken, favorites.Update)
+	favorite := api.Group("/favorite") // Route for servers
+	favorite.Put("/", middlewares.CheckUserToken, favorites.Update)
 
 	/* SHARES RELATED ROUTES */
 	share := api.Group("/share") // Route for servers
