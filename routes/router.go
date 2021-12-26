@@ -30,7 +30,7 @@ func SetupRoutes(app *fiber.App) {
 	user.Post("/quota", middlewares.CheckUserToken, users.QuotaCheck)
 	user.Post("/auth/login", users.Login)
 	user.Post("/auth/register", users.Register)
-	user.Post("/auth/logout", users.Logout)
+	user.Get("/auth/logout", users.Logout)
 
 	/* FILES RELATED ROUTES */
 	file := api.Group("/file") // Route for servers
