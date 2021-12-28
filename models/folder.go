@@ -37,8 +37,8 @@ func FolderDelete(id string, owner string) error {
 	return err
 }
 
-func FolderList(owner string) ([]*Folder, error) {
-	rows, err := database.DB.Query(context.Background(), `SELECT id, name, path FROM folders WHERE f_owner = $1`, owner)
+func FolderList(owner string, path string) ([]*Folder, error) {
+	rows, err := database.DB.Query(context.Background(), `SELECT id, name, path FROM folders WHERE f_owner = $1 AND path = $2`, owner, path)
 	if err != nil {
 		log.Println(err)
 	}

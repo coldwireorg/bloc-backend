@@ -53,4 +53,5 @@ func SetupRoutes(app *fiber.App) {
 	/* SHARES RELATED ROUTES */
 	folder := api.Group("/folder") // Route for servers
 	folder.Post("/", middlewares.CheckUserToken, folders.Create)
+	folder.Get("/", middlewares.CheckUserToken, folders.List)
 }
