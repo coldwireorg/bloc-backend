@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS folders (
     id              UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     name            VARCHAR(25) NOT NULL,
     f_owner         VARCHAR(25) NOT NULL,
-    path            TEXT UNIQUE NOT NULL DEFAULT '/',
+    path            VARCHAR(255) NOT NULL DEFAULT '/',
     CONSTRAINT fk_owner
         FOREIGN KEY(f_owner)
             REFERENCES users(username)
