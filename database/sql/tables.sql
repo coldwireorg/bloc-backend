@@ -1,5 +1,3 @@
--- License  : NPOSL 3.0
-
 SELECT 'CREATE DATABASE bloc ENCODING ''UTF8'''
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'bloc')\gexec
 
@@ -34,6 +32,7 @@ CREATE TABLE IF NOT EXISTS file_access (
     f_shared_by     VARCHAR(25) NOT NULL,
     f_file          UUID NOT NULL,
     favorite        BOOLEAN NOT NULL DEFAULT FALSE,
+    path            TEXT NOT NULL DEFAULT "/",
     encryption_key  BYTEA NOT NULL,
     CONSTRAINT fk_shared_to
         FOREIGN KEY(f_shared_to)
@@ -46,6 +45,12 @@ CREATE TABLE IF NOT EXISTS file_access (
             REFERENCES files(id)
 );
 
-
--- SELECT t1.name AS file_name FROM files AS t1 INNER JOIN users AS t2 ON t1.username = t2.f_owner WHERE t2.username = 'admin';
--- SELECT t3.name AS file_name FROM file_access AS t1 INNER JOIN users AS t2 ON t1.f_shared_to = t2.username INNER JOIN files AS t3 ON t1.f_file = t3.id WHERE t2.username = 'admin';
+CREATE TABLE IF NOT EXISTS folders (
+    id              UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    name            VARCHAR(25) NOT NULL
+    f_owner     VARCHAR(25) NOT NULL,
+    path            TEXT NOT NULL DEFAULT "/",
+    CONSTRAINT fk_owner
+        FOREIGN KEY(f_owner)
+            REFERENCES users(username)
+);

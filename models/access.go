@@ -11,6 +11,7 @@ import (
 
 type Access struct {
 	Id            string `db:"access_id"      json:"accessId"`
+	IsFolder      bool   `db:"is_folder"      json:"isFolder"`
 	State         string `db:"access_state"   json:"accessState"`
 	SharedBy      string `db:"shared_by"      json:"sharedBy"`
 	SharedTo      string `db:"shared_to"      json:"sharedTo"`
@@ -24,12 +25,13 @@ func AccessCreate(access Access) error {
 	_, err := database.DB.Exec(context.Background(), `INSERT INTO
 	file_access(
 		id,
+		is_folder,
 		access_state,
 		f_shared_by,
 		f_shared_to,
 		f_file,
 		encryption_key
-	) VALUES ($1, $2, $3, $4, $5, $6)`, access.Id, access.State, access.SharedBy, access.SharedTo, access.FileId, access.EncryptionKey)
+	) VALUES ($1, $2, $3, $4, $5, $6, $7)`, access.Id, access.IsFolder, access.State, access.SharedBy, access.SharedTo, access.FileId, access.EncryptionKey)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -55,6 +57,7 @@ func AccessGet(id string) (Access, error) {
 	var access Access
 	err := pgxscan.Get(context.Background(), database.DB, &access, `SELECT
 	id           AS access_id,
+	is_folder,
 	access_state AS access_state,
 	f_shared_by  AS shared_by,
 	f_shared_to  AS shared_to,
