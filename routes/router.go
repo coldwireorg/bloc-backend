@@ -3,6 +3,7 @@ package routes
 import (
 	"bloc/controllers/favorites"
 	"bloc/controllers/files"
+	"bloc/controllers/folders"
 	"bloc/controllers/shares"
 	"bloc/controllers/users"
 	"bloc/middlewares"
@@ -48,4 +49,8 @@ func SetupRoutes(app *fiber.App) {
 	share.Post("/", middlewares.CheckUserToken, shares.Create)
 	share.Delete("/", middlewares.CheckUserToken, shares.Revoke)
 	share.Get("/", middlewares.CheckUserToken, shares.List)
+
+	/* SHARES RELATED ROUTES */
+	folder := api.Group("/folder") // Route for servers
+	folder.Post("/", middlewares.CheckUserToken, folders.Create)
 }

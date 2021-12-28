@@ -11,13 +11,13 @@ import (
 type Folder struct {
 	Id    string `db:"id"      json:"id"`
 	Name  string `db:"name"    json:"name"`
-	Owner string `db:"f_owner" json:"belongTo"`
+	Owner string `db:"f_owner" json:"owner"`
 	Path  string `db:"path"    json:"path"`
 }
 
 func FolderCreate(folder Folder) error {
 	// Create new folder in database
-	_, err := database.DB.Exec(context.Background(), `INSERT INTO folders(id, f_owner, belong_to, path) VALUES($1, $2, $3, $4)`, folder.Id, folder.Name, folder.Owner, folder.Path)
+	_, err := database.DB.Exec(context.Background(), `INSERT INTO folders(id, name, f_owner, path) VALUES($1, $2, $3, $4)`, folder.Id, folder.Name, folder.Owner, folder.Path)
 	if err != nil {
 		log.Println(err.Error())
 		return err
