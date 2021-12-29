@@ -29,6 +29,7 @@ type FileFull struct {
 	SharedTo string    `db:"shared_to" json:"sharedTo"`
 	LastEdit time.Time `db:"last_edit" json:"lastEdit"`
 	Favorite bool      `db:"favorite"  json:"favorite"`
+	Path     string    `db:"path"      json:"path"`
 
 	FileId   string `db:"file_id"   json:"fileId"`
 	FileName string `db:"file_name" json:"fileName"`
@@ -117,7 +118,7 @@ func FileGetSize(id string) (int64, error) {
  *************************************/
 
 // List files or received files
-func FileList(username string) ([]*FileFull, error) {
+func FileList(username string, path string) ([]*FileFull, error) {
 	req := `SELECT
 	t1.id           AS access_id,
 	t1.access_state AS access_state,
@@ -125,15 +126,16 @@ func FileList(username string) ([]*FileFull, error) {
 	t1.f_shared_to  AS shared_to,
 	t2.last_edit    AS last_edit,
 	t1.favorite     AS favorite,
+	t1.path					AS path,
 	t2.id           AS file_id,
 	t2.name         AS file_name,
 	t2.type         AS file_type,
 	t2.size         AS file_size
 		FROM file_access AS t1
 			INNER JOIN files AS t2 ON t1.f_file = t2.id
-				WHERE t1.f_shared_to = $1;`
+				WHERE t1.f_shared_to = $1 AND t1.path = $2;`
 
-	rows, err := database.DB.Query(context.Background(), req, username)
+	rows, err := database.DB.Query(context.Background(), req, username, path)
 	if err != nil {
 		log.Println(err)
 	}

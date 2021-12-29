@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS file_access (
     f_shared_by     VARCHAR(25) NOT NULL,
     f_file          UUID NOT NULL,
     favorite        BOOLEAN NOT NULL DEFAULT FALSE,
+    path            VARCHAR(255) NOT NULL DEFAULT '/',
     encryption_key  BYTEA NOT NULL,
     CONSTRAINT fk_shared_to
         FOREIGN KEY(f_shared_to)

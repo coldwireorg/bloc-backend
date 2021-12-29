@@ -17,6 +17,7 @@ type Access struct {
 	SharedTo      string `db:"shared_to"      json:"sharedTo"`
 	FileId        string `db:"file_id"        json:"fileId"`
 	Favorite      bool   `db:"favorite"       json:"favorite"`
+	Path          string `db:"path"           json:"path"`
 	EncryptionKey []byte `db:"encryption_key" json:"-"`
 }
 
@@ -27,11 +28,12 @@ func AccessCreate(access Access) error {
 		id,
 		is_folder,
 		access_state,
+		path,
 		f_shared_by,
 		f_shared_to,
 		f_file,
 		encryption_key
-	) VALUES ($1, $2, $3, $4, $5, $6, $7)`, access.Id, access.IsFolder, access.State, access.SharedBy, access.SharedTo, access.FileId, access.EncryptionKey)
+	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, access.Id, access.IsFolder, access.State, access.Path, access.SharedBy, access.SharedTo, access.FileId, access.EncryptionKey)
 
 	if err != nil {
 		log.Println(err.Error())

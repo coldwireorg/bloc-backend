@@ -10,14 +10,19 @@ import (
 
 // List files
 func List(ctx *fiber.Ctx) error {
-	var err error
+	var path string
+
+	path = ctx.Query("path") // Get path
+	if path == "" {
+		path = "/"
+	}
 
 	token, err := tokens.Parse(ctx.Cookies("token")) // get JWT token
 	if err != nil {
 		return errors.HandleError(ctx, errors.ErrRequest)
 	}
 
-	files, err := models.FileList(token.Username)
+	files, err := models.FileList(token.Username, path)
 
 	if err != nil {
 		return errors.HandleError(ctx, errors.ErrDatabaseNotFound)
